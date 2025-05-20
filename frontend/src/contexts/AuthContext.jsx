@@ -6,31 +6,29 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-/*
-  useEffect(() => {
-    
-    async function loadUser() {
-      try {
-        const currentUser = await getCurrentUser();
-        setUser(currentUser);
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
+
+useEffect(() => {
+  async function loadUser() {
+    const storedUser = localStorage.getItem('user');
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      setLoading(false);
+      return;
     }
-    loadUser();
-  }, []);
-  */
 
-  useEffect(() => {
-  const storedUser = localStorage.getItem('user');
-  if (storedUser) {
-    setUser(JSON.parse(storedUser));
+    try {
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+    } catch {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }
-  setLoading(false);
-}, []);
 
+  loadUser();
+}, []);
 
 const login = async (credentials) => {
   const loggedInUser = await apiLogin(credentials);
