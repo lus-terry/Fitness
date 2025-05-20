@@ -1,14 +1,17 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import RequireAuth from '../components/RequireAuth';
+
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
-  if (!user) {
-    return <p>Molimo prijavite se za pristup dashboardu.</p>;
+  if(!user) {
+    <RequireAuth/>
   }
-
   return (
     <div>
       <h2>Dobrodošli, {user.name}</h2>

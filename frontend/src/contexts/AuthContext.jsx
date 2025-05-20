@@ -1,13 +1,14 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { login, logout as apiLogout, register, getCurrentUser } from '../api/auth';
+import { login as apiLogin, logout as apiLogout, register, getCurrentUser } from '../api/auth';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+/*
   useEffect(() => {
+    
     async function loadUser() {
       try {
         const currentUser = await getCurrentUser();
@@ -20,12 +21,25 @@ export const AuthProvider = ({ children }) => {
     }
     loadUser();
   }, []);
+  */
 
-  const loginUser = async (credentials) => {
-    const loggedInUser = await login(credentials);
-    setUser(loggedInUser);
-    return loggedInUser;
-  };
+  useEffect(() => {
+  const storedUser = localStorage.getItem('user');
+  if (storedUser) {
+    setUser(JSON.parse(storedUser));
+  }
+  setLoading(false);
+}, []);
+
+
+const login = async (credentials) => {
+  const loggedInUser = await apiLogin(credentials);
+  setUser(loggedInUser);
+   localStorage.setItem('user', JSON.stringify(loggedInUser));
+  return loggedInUser;
+};
+
+
 
   const registerUser = async (data) => {
     const newUser = await register(data);
@@ -36,11 +50,12 @@ export const AuthProvider = ({ children }) => {
   const logoutUser = async () => {
     await apiLogout();
     setUser(null);
+    localStorage.removeItem('user')
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, loginUser, registerUser, logout: logoutUser }}
+      value={{ user, loading, login, registerUser, logout: logoutUser }}
     >
       {children}
     </AuthContext.Provider>

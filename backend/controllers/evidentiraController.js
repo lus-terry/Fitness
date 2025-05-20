@@ -1,4 +1,4 @@
-const Evidentira = require('../models/evidentiraModel');
+const Evidentira = require('../models/evidentira');
 
 exports.getAll = async (req, res) => {
   try {

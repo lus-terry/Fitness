@@ -1,4 +1,4 @@
-const Trener = require('../models/trenerModel');
+const Trener = require('../models/trener');
 
 exports.getAll = async (req, res) => {
   try {
