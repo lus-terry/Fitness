@@ -1,4 +1,7 @@
 const db = require('../db');
+const jwt = require('jsonwebtoken');
+require('dotenv').config(); // ako koristiš .env
+
 
 exports.register = async (req, res) => {
   const {
@@ -80,16 +83,12 @@ exports.register = async (req, res) => {
   }
 };
 
-
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Pronađi korisnika po emailu
-    const result = await db.query(
-      'SELECT * FROM korisnik WHERE email = $1',
-      [email]
-    );
+    // 1. Nađi korisnika
+    const result = await db.query('SELECT * FROM korisnik WHERE email = $1', [email]);
 
     if (result.rows.length === 0) {
       return res.status(401).json({ message: 'Neispravan email ili lozinka' });
@@ -97,36 +96,43 @@ exports.login = async (req, res) => {
 
     const korisnik = result.rows[0];
 
-    // U stvarnosti bi ovdje usporedio hashirane lozinke!
+    // 2. Provjeri lozinku (napomena: bez hashiranja zasad)
     if (korisnik.lozinka !== password) {
       return res.status(401).json({ message: 'Neispravan email ili lozinka' });
     }
 
-    // Dohvati ulogu (klijent, trener, admin)
-    let role = 'admin'; // default ako nije ni klijent ni trener
+    // 3. Odredi ulogu
+    let role = null;
 
-    const klijentCheck = await db.query(
-      'SELECT 1 FROM klijent WHERE id_korisnika = $1',
-      [korisnik.id_korisnika]
-    );
-    if (klijentCheck.rows.length > 0) role = 'client';
+const klijent = await db.query('SELECT 1 FROM klijent WHERE id_korisnika = $1', [korisnik.id_korisnika]);
+if (klijent.rows.length > 0) role = 'client';
 
-    const trenerCheck = await db.query(
-      'SELECT 1 FROM trener WHERE id_korisnika = $1',
-      [korisnik.id_korisnika]
-    );
-    if (trenerCheck.rows.length > 0) role = 'trainer';
+const trener = await db.query('SELECT 1 FROM trener WHERE id_korisnika = $1', [korisnik.id_korisnika]);
+if (trener.rows.length > 0) role = 'trainer';
 
+if (!role) {
+  return res.status(403).json({ message: 'Korisnik nema definiranu ulogu.' });
+}
+
+    // 4. Priprema korisnika za token
+    const userPayload = {
+      id_korisnika: korisnik.id_korisnika,
+      ime: korisnik.ime,
+      prezime: korisnik.prezime,
+      email: korisnik.email,
+      role
+    };
+
+    // 5. Generiraj JWT token
+    const token = jwt.sign(userPayload, process.env.JWT_SECRET || 'tajna', { expiresIn: '1h' });
+
+    // 6. Pošalji korisnika + token
     res.status(200).json({
       message: 'Login uspješan',
-      user: {
-        id_korisnika: korisnik.id_korisnika,
-        ime: korisnik.ime,
-        prezime: korisnik.prezime,
-        email: korisnik.email,
-        role: role
-      }
+      user: userPayload,
+      token
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Greška pri loginu' });

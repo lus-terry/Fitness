@@ -20,6 +20,7 @@ app.use('/zahtjevi', require('./routes/zahtjevRoutes'));
 app.use('/zapisi', require('./routes/fitnessZapisRoutes'));
 app.use('/evidencije', require('./routes/evidentiraRoutes'));
 
+
 app.get('/', (req, res) => {
   res.send('Backend dela');
 });
