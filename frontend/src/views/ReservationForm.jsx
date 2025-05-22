@@ -10,15 +10,14 @@ export default function ReservationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       await axios.post('http://localhost:5000/termini', {
         datum,
         vrijeme_termina: vrijeme,
-        mjesto: 'Nije uneseno',  // ili možeš napraviti input i za mjesto
-        trajanje: 60,            // ako je fiksno trajanje, ili napravi input
+        mjesto: 'Nije uneseno',
+        trajanje: 60,
         dostupnost: true,
-        id_trenera: 1,           // ako imaš dinamički odabir, zamijeni s vrijednosti iz forme
+        id_trenera: 1,
         id_treninga: 1,
         napomena,
       });
@@ -35,42 +34,22 @@ export default function ReservationForm() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Rezervacija termina</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label>
-            Datum:
-            <input
-              type="date"
-              value={datum}
-              onChange={(e) => setDatum(e.target.value)}
-              required
-            />
-          </label>
+          <label>Datum:</label>
+          <input type="date" value={datum} onChange={(e) => setDatum(e.target.value)} required />
         </div>
 
         <div>
-          <label>
-            Vrijeme:
-            <input
-              type="time"
-              value={vrijeme}
-              onChange={(e) => setVrijeme(e.target.value)}
-              required
-            />
-          </label>
+          <label>Vrijeme:</label>
+          <input type="time" value={vrijeme} onChange={(e) => setVrijeme(e.target.value)} required />
         </div>
 
         <div>
-          <label>
-            Napomena:
-            <textarea
-              value={napomena}
-              onChange={(e) => setNapomena(e.target.value)}
-              placeholder="Upiši napomenu..."
-            />
-          </label>
+          <label>Napomena:</label>
+          <textarea value={napomena} onChange={(e) => setNapomena(e.target.value)} />
         </div>
 
         <button type="submit" disabled={loading}>
@@ -80,3 +59,4 @@ export default function ReservationForm() {
     </div>
   );
 }
+

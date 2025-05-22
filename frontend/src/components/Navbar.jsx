@@ -18,26 +18,48 @@ const Navbar = () => {
       <Link to="/" style={styles.logo}>
         FitnessApp
       </Link>
-      <div style={styles.links}>
-        <NavLink to="/" exact activeStyle={styles.activeLink} style={styles.link}>
-          Početna
-        </NavLink>
-        {user && (user.role === 'admin' || user.role === 'trainer') && (
-          <NavLink to="/schedule" activeStyle={styles.activeLink} style={styles.link}>
-            Raspored
+
+      {user && (
+        <div style={styles.links}>
+          <NavLink to="/dashboard" style={styles.link} activeStyle={styles.activeLink}>
+            Dashboard
           </NavLink>
-        )}
-        {user && (
-          <NavLink to="/trainings" activeStyle={styles.activeLink} style={styles.link}>
+          <NavLink to="/trainings" style={styles.link} activeStyle={styles.activeLink}>
             Treninzi
           </NavLink>
-        )}
-        {user && user.role === 'admin' && (
-          <NavLink to="/admin" activeStyle={styles.activeLink} style={styles.link}>
-            Admin Panel
+
+          {/* Rezervacije - dostupno samo klijentima i adminu */}
+          {(user.role === 'klijent' || user.role === 'admin') && (
+            <NavLink to="/reservation" style={styles.link} activeStyle={styles.activeLink}>
+              Rezervacije
+            </NavLink>
+          )}
+
+          <NavLink to="/schedule" style={styles.link} activeStyle={styles.activeLink}>
+            Raspored
           </NavLink>
-        )}
-      </div>
+
+          {/* Prisustva - dostupno samo trenerima i adminu */}
+          {(user.role === 'trener' || user.role === 'admin') && (
+            <NavLink to="/attendance" style={styles.link} activeStyle={styles.activeLink}>
+              Prisustva
+            </NavLink>
+          )}
+
+          {/* Admin sekcija */}
+          {user.role === 'admin' && (
+            <>
+              <NavLink to="/admin" style={styles.link} activeStyle={styles.activeLink}>
+                Admin Panel
+              </NavLink>
+              <NavLink to="/users" style={styles.link} activeStyle={styles.activeLink}>
+                Korisnici
+              </NavLink>
+            </>
+          )}
+        </div>
+      )}
+
       <div style={styles.auth}>
         {user ? (
           <>
@@ -69,6 +91,7 @@ const styles = {
     padding: '1rem 2rem',
     backgroundColor: '#282c34',
     color: 'white',
+    flexWrap: 'wrap',
   },
   logo: {
     fontWeight: 'bold',
@@ -79,6 +102,7 @@ const styles = {
   links: {
     display: 'flex',
     gap: '1rem',
+    flexWrap: 'wrap',
   },
   link: {
     color: 'white',
