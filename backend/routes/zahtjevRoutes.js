@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/zahtjevController');
+const zahtjevController = require('../controllers/zahtjevController');
+const { verifyToken } = require('../middlewares/authMiddleware');
 
-router.get('/', controller.getAll);
-router.post('/', controller.create);
+router.post('/', verifyToken, zahtjevController.create);
+router.get('/my-reservations', verifyToken, zahtjevController.getMyReservations);
 
 module.exports = router;

@@ -1,24 +1,24 @@
-import axios from 'axios';
+// src/api/reservations.js
+import axios from './axios'; // ✅ KORISTI prilagođeni axios s interceptorom
 
-const API_URL = 'http://localhost:5000/api/reservations'; // prilagodi URL prema backendu
+const API_URL = '/api/reservations'; // koristi proxy (nema localhost)
 
-export const createReservation = async (reservationData) => {
-  const response = await axios.post(API_URL, reservationData);
-  return response.data;
+export const createReservation = async (data) => {
+  console.log('[createReservation] Šaljem podatke:', data); // ✅ provjera
+  const res = await axios.post(API_URL, data);
+  return res.data;
 };
 
-export const getReservationsByUser = async (userId) => {
-  const response = await axios.get(`${API_URL}/user/${userId}`);
-  return response.data;
+export const getReservationsByUser = async () => {
+  const res = await axios.get(`${API_URL}/my-reservations`);
+  return res.data;
 };
 
 export const cancelReservation = async (reservationId) => {
-  const response = await axios.delete(`${API_URL}/${reservationId}`);
-  return response.data;
+  const res = await axios.delete(`${API_URL}/${reservationId}`);
+  return res.data;
 };
 
-// Dodaj funkciju koju traži view Schedule.jsx
 export const getUserReservations = async (userId) => {
-  // Ako nema endpointa getUserReservations, možemo mapirati na getReservationsByUser
-  return getReservationsByUser(userId);
+  return getReservationsByUser(userId); // funkcionalno isto
 };

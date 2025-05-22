@@ -1,62 +1,39 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { createReservation } from '../api/reservations';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ReservationForm() {
-  const [datum, setDatum] = useState('');
-  const [vrijeme, setVrijeme] = useState('');
-  const [napomena, setNapomena] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const [id_termina, setIdTermina] = useState('');
+  const [status, setStatus] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     try {
-      await axios.post('http://localhost:5000/termini', {
-        datum,
-        vrijeme_termina: vrijeme,
-        mjesto: 'Nije uneseno',
-        trajanje: 60,
-        dostupnost: true,
-        id_trenera: 1,
-        id_treninga: 1,
-        napomena,
-      });
-      alert('Termin uspješno rezerviran!');
-      setDatum('');
-      setVrijeme('');
-      setNapomena('');
-    } catch (error) {
-      console.error('Greška pri rezervaciji:', error);
-      alert('Došlo je do greške.');
-    } finally {
-      setLoading(false);
+      console.log('[FORM] Token u localStorage:', localStorage.getItem('token'));
+
+      await createReservation({ id_termina });
+      setStatus('✅ Zahtjev za rezervaciju poslan!');
+    } catch (err) {
+      console.error(err);
+      setStatus('❌ Greška pri slanju zahtjeva.');
     }
   };
 
+  if (!user || user.role !== 'client') {
+    return <p>Samo klijenti mogu rezervirati termine.</p>;
+  }
+
   return (
-    <div className="container">
-      <h1>Rezervacija termina</h1>
+    <div>
+      <h2>Rezervacija termina</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Datum:</label>
-          <input type="date" value={datum} onChange={(e) => setDatum(e.target.value)} required />
-        </div>
-
-        <div>
-          <label>Vrijeme:</label>
-          <input type="time" value={vrijeme} onChange={(e) => setVrijeme(e.target.value)} required />
-        </div>
-
-        <div>
-          <label>Napomena:</label>
-          <textarea value={napomena} onChange={(e) => setNapomena(e.target.value)} />
-        </div>
-
-        <button type="submit" disabled={loading}>
-          {loading ? 'Rezerviram...' : 'Rezerviraj termin'}
-        </button>
+        <label>ID termina:
+          <input type="number" value={id_termina} onChange={e => setIdTermina(e.target.value)} required />
+        </label>
+        <button type="submit">Rezerviraj</button>
       </form>
+      {status && <p>{status}</p>}
     </div>
   );
 }
-
