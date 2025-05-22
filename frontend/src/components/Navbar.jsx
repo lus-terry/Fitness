@@ -29,18 +29,19 @@ const Navbar = () => {
           </NavLink>
 
           {/* Rezervacije - dostupno samo klijentima i adminu */}
-          {(user.role === 'klijent' || user.role === 'admin') && (
+          {(user.role === 'client' || user.role === 'admin') && (
             <NavLink to="/reservation" style={styles.link} activeStyle={styles.activeLink}>
               Rezervacije
             </NavLink>
           )}
 
           <NavLink to="/schedule" style={styles.link} activeStyle={styles.activeLink}>
-            Raspored
+             Raspored
           </NavLink>
 
+
           {/* Prisustva - dostupno samo trenerima i adminu */}
-          {(user.role === 'trener' || user.role === 'admin') && (
+          {(user.role === 'trainer' || user.role === 'admin') && (
             <NavLink to="/attendance" style={styles.link} activeStyle={styles.activeLink}>
               Prisustva
             </NavLink>
