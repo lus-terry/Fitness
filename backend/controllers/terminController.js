@@ -1,4 +1,4 @@
-const Termin = require('../models/terminModel');
+const Termin = require('../models/termin');
 
 exports.getAll = async (req, res) => {
   try {

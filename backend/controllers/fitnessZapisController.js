@@ -1,4 +1,4 @@
-const FitnessZapis = require('../models/fitnessZapisModel');
+const FitnessZapis = require('../models/zapis');
 
 exports.getAll = async (req, res) => {
   try {

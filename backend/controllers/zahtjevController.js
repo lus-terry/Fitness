@@ -1,4 +1,4 @@
-const Zahtjev = require('../models/zahtjevModel');
+const Zahtjev = require('../models/zahtjev');
 
 exports.getAll = async (req, res) => {
   try {
