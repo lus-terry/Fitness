@@ -7,36 +7,37 @@ import RequireAuth from '../components/RequireAuth';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const navigate = useNavigate();
 
-  if(!user) {
-    <RequireAuth/>
-  }
+  if (!user) return <RequireAuth />;
+
   return (
-    <div>
+    <div className="container">
       <h2>Dobrodošli, {user.name}</h2>
       <p>Uloga: {user.role}</p>
 
-      {user.role === 'client' && (
-        <>
-          <Link to="/trainings">Pregled treninga</Link><br />
-          <Link to="/schedule">Moje rezervacije</Link>
-        </>
-      )}
+      <ul>
+        {user.role === 'client' && (
+          <>
+            <li><Link to="/trainings">Pregled treninga</Link></li>
+            <li><Link to="/schedule">Moje rezervacije</Link></li>
+          </>
+        )}
 
-      {user.role === 'trainer' && (
-        <>
-          <Link to="/schedule">Raspored treninga</Link><br />
-          <Link to="/attendance">Evidencija prisutnosti</Link>
-        </>
-      )}
+        {user.role === 'trainer' && (
+          <>
+            <li><Link to="/schedule">Raspored treninga</Link></li>
+            <li><Link to="/attendance">Evidencija prisutnosti</Link></li>
+          </>
+        )}
 
-      {user.role === 'admin' && (
-        <>
-          <Link to="/admin">Administracija</Link><br />
-          <Link to="/users">Upravljanje korisnicima</Link>
-        </>
-      )}
+        {user.role === 'admin' && (
+          <>
+            <li><Link to="/admin">Administracija</Link></li>
+            <li><Link to="/users">Upravljanje korisnicima</Link></li>
+          </>
+        )}
+      </ul>
     </div>
   );
 }
+
