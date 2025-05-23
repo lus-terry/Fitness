@@ -23,7 +23,10 @@ exports.create = async (req, res) => {
   }
 
   try {
-    const noviTermin = await Termin.create(req.body);
+    const noviTermin = await Termin.create({
+      ...req.body,
+      dostupnost: 'available'
+    });
     res.status(201).json(noviTermin);
   } catch (err) {
     console.error('[terminController] ❌ Greška prilikom unosa termina:', err.message);

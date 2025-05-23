@@ -15,6 +15,10 @@ app.use('/zahtjevi', require('./routes/zahtjevRoutes'));
 app.use('/zapisi', require('./routes/fitnessZapisRoutes'));
 app.use('/evidencije', require('./routes/evidentiraRoutes'));
 app.use('/api/reservations', require('./routes/zahtjevRoutes')); // duplicirano s '/zahtjevi'
+app.use('/treninzi', require('./routes/treningRoutes'));
+app.use('/trening_vjezba', require('./routes/treningVjezbaRoutes'))
+app.use('/vjezbe', require('./routes/vjezbaRoutes'));
+
 
 app.get('/', (req, res) => {
   res.send('Backend dela');

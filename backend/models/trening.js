@@ -5,10 +5,10 @@ exports.getAll = async () => {
   return res.rows;
 };
 
-exports.create = async ({ naziv, plan, id_trenera }) => {
+exports.create = async ({ naziv, opis, id_trenera }) => {
   const res = await db.query(
-    'INSERT INTO trening (naziv, plan, id_trenera) VALUES ($1, $2, $3) RETURNING *',
-    [naziv, plan, id_trenera]
+    'INSERT INTO trening (naziv, opis, id_trenera) VALUES ($1, $2, $3) RETURNING *',
+    [naziv, opis, id_trenera]
   );
   return res.rows[0];
 };
