@@ -7,12 +7,15 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useAuth } from '../contexts/AuthContext';
 import TerminModal from '../components/TerminModal';
 import TrenerDropdown from '../components/TrenerDropdown';
+import { useNavigate } from 'react-router-dom';
+import { createReservation, cancelReservation } from '../api/reservations';
 
 const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
 const Schedule = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [trenutniTrener, setTrenutniTrener] = useState(null);
@@ -90,6 +93,28 @@ const Schedule = () => {
   const handleNavigate = useCallback((newDate) => setDate(newDate), []);
   const handleViewChange = useCallback((newView) => setView(newView), []);
 
+  const handleReserve = async (termin) => {
+    try {
+      await createReservation(termin.id);
+      setTrenutniTermin(null);
+      window.location.reload();
+    } catch (err) {
+      console.error('❌ Rezervacija nije uspjela:', err);
+      alert('Greška prilikom rezervacije.');
+    }
+  };
+
+  const handleCancel = async (termin) => {
+    try {
+      await cancelReservation(termin.id);
+      setTrenutniTermin(null);
+      window.location.reload();
+    } catch (err) {
+      console.error('❌ Otkazivanje nije uspjelo:', err);
+      alert('Greška prilikom otkazivanja.');
+    }
+  };
+
   const eventStyleGetter = (event) => {
     const backgroundColor = event.rezerviran ? '#FFA500' : '#ADD8E6';
     return {
@@ -108,7 +133,7 @@ const Schedule = () => {
     <div className="p-4" style={{ width: '90%', margin: '0 auto' }}>
       <h2 className="text-xl font-bold mb-4">Raspored termina</h2>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <label>
             <input
@@ -127,6 +152,16 @@ const Schedule = () => {
         </div>
 
         {user?.role === 'client' && <TrenerDropdown onSelect={setTrenutniTrener} />}
+
+        {user?.role === 'trainer' && (
+          <button
+            onClick={() => navigate('/novi-termin')}
+            className="btn btn-primary"
+            style={{ height: 'fit-content', alignSelf: 'flex-start' }}
+          >
+            ➕ Dodaj termin
+          </button>
+        )}
       </div>
 
       <Calendar
@@ -149,6 +184,8 @@ const Schedule = () => {
           termin={trenutniTermin}
           trener={user.role === 'trainer' ? (trenutniTermin.klijentIme || '-') : `${user.ime} ${user.prezime}`}
           onClose={() => setTrenutniTermin(null)}
+          onReserve={handleReserve}
+          onCancel={handleCancel}
           osvjezi={() => window.location.reload()}
         />
       )}
