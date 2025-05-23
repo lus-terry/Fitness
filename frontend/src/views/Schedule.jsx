@@ -136,7 +136,7 @@ const Schedule = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <label>
-            <input
+            <input  
               type="checkbox"
               checked={showAvailable}
               onChange={(e) => setShowAvailable(e.target.checked)}
@@ -182,7 +182,7 @@ const Schedule = () => {
       {trenutniTermin && (
         <TerminModal
           termin={trenutniTermin}
-          trener={user.role === 'trainer' ? (trenutniTermin.klijentIme || '-') : `${user.ime} ${user.prezime}`}
+          trener={user.role === 'trainer' ? (trenutniTermin.klijentIme || '-') : `${trenutniTermin.trenutniTrener} ${user.prezime}`}
           onClose={() => setTrenutniTermin(null)}
           onReserve={handleReserve}
           onCancel={handleCancel}
