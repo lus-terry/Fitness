@@ -15,6 +15,8 @@ import Attendance from '../views/Attendance';
 import NotFound from '../views/NotFound';
 import TerminForm from '../views/TerminForm';
 import ProtectedRoute from './ProtectedRoute';
+import Trainings from '../views/Trainings';
+
 
 export default function AppRoutes() {
   return (
@@ -78,6 +80,15 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+  path="/trainings"
+  element={
+    <ProtectedRoute allowedRoles={['trainer']}>
+      <Trainings />
+    </ProtectedRoute>
+  }
+/>
+
 
       {/* Admin-only */}
       <Route

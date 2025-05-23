@@ -32,7 +32,7 @@ const Navbar = () => {
           )}
           {(user.role === 'trainer' ) && (
           <NavLink to="/trainings" style={styles.link} activeStyle={styles.activeLink}>
-            Treninzi
+            Organizacija treninga
           </NavLink>
           )}
 

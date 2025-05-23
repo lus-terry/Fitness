@@ -1,102 +1,138 @@
-import React, { useState } from 'react';
-import { createTermin } from '../api/termini';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import VjezbeDetailSection from '../components/VjezbaDetailSection';
 
-export default function TerminForm() {
-  const { user } = useAuth(); // Trener mora biti ulogiran
+const TerminForm = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-const [form, setForm] = useState({
-  id_treninga: '',
-  datum: '',
-  vrijeme_termina: '',
-  trajanje: '',
-  mjesto: '',
-});
+  const [treninzi, setTreninzi] = useState([]);
+  const [termin, setTermin] = useState({
+    datum: '',
+    vrijeme_termina: '',
+    trajanje: '',
+    id_treninga: '',
+    mjesto: ''
+  });
 
-  const [status, setStatus] = useState(null);
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const fetchTreninzi = async () => {
+      const res = await axios.get('/treninzi');
+      setTreninzi(res.data);
+    };
+    fetchTreninzi();
+  }, []);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setTermin({ ...termin, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus(null);
-    setLoading(true);
-
     try {
-      const terminZaSlanje = {
-        ...form,
+      const payload = {
+        ...termin,
         id_trenera: user.id_korisnika,
-        id_treninga: parseInt(form.id_treninga),
-        trajanje: parseInt(form.trajanje),
-        dostupnost: 'available',
+        trajanje: parseInt(termin.trajanje),
+        dostupnost: 'available'
       };
-
-      await createTermin(terminZaSlanje);
-      setStatus('✅ Termin uspješno dodan.');
-      setForm({
-        datum: '',
-        vrijeme_termina: '',
-        trajanje: '',
-        mjesto: '',
-  
+      await axios.post('/termini', payload, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       });
-    } catch (error) {
-      console.error(error);
-      setStatus('❌ Greška pri unosu termina.');
-      console.log('Greška:', error);
-    } finally {
-      setLoading(false);
+      alert('Termin uspješno dodan!');
+      navigate('/');
+    } catch (err) {
+      console.error('❌ Greška prilikom dodavanja termina:', err);
+      alert('Greška prilikom dodavanja.');
     }
   };
 
-  if (!user || user.role !== 'trainer') {
-    return <p style={{ color: 'red' }}>Samo treneri mogu dodavati termine.</p>;
-  }
-
   return (
-    <div>
-      <h2>Dodaj novi termin</h2>
-      <form onSubmit={handleSubmit}>
-    
-        <input
-          name="datum"
-          type="date"
-          value={form.datum}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="vrijeme_termina"
-          type="time"
-          value={form.vrijeme_termina}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="trajanje"
-          type="number"
-          placeholder="Trajanje (u minutama)"
-          value={form.trajanje}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="mjesto"
-          placeholder="Mjesto održavanja"
-          value={form.mjesto}
-          onChange={handleChange}
-          required
-        />
+    <div className="p-6 max-w-4xl mx-auto border rounded-xl shadow bg-white text-center">
+      <h2 className="text-2xl font-bold mb-6">Unos novog termina</h2>
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Dodavanje...' : 'Dodaj termin'}
-        </button>
+      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
+        <div className="col-span-1">
+          <label className="block text-sm font-medium text-left">Datum:</label>
+          <input
+            type="date"
+            name="datum"
+            value={termin.datum}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div className="col-span-1">
+          <label className="block text-sm font-medium text-left">Vrijeme:</label>
+          <input
+            type="time"
+            name="vrijeme_termina"
+            value={termin.vrijeme_termina}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div className="col-span-1">
+          <label className="block text-sm font-medium text-left">Trajanje (min):</label>
+          <input
+            type="number"
+            name="trajanje"
+            value={termin.trajanje}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div className="col-span-1">
+          <label className="block text-sm font-medium text-left">Lokacija (mjesto):</label>
+          <input
+            type="text"
+            name="mjesto"
+            value={termin.mjesto}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+        </div>
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-left">Trening:</label>
+          <select
+            name="id_treninga"
+            value={termin.id_treninga}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          >
+            <option value="">-- Odaberi trening --</option>
+            {treninzi.map((t) => (
+              <option key={t.id_treninga} value={t.id_treninga}>
+                {t.naziv}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="col-span-2">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+          >
+            Dodaj termin
+          </button>
+        </div>
       </form>
 
-      {status && <p>{status}</p>}
+      {termin.id_treninga && (
+        <VjezbeDetailSection idTreninga={termin.id_treninga} />
+      )}
     </div>
   );
-}
+};
+
+export default TerminForm;
