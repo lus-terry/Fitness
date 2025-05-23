@@ -182,7 +182,7 @@ const Schedule = () => {
       {trenutniTermin && (
         <TerminModal
           termin={trenutniTermin}
-          trener={user.role === 'trainer' ? (trenutniTermin.klijentIme || '-') : `${trenutniTermin.trenutniTrener} ${user.prezime}`}
+          trener={user.role === 'trainer' ? (trenutniTermin.klijentIme || '-') : `${user.ime} ${user.prezime}`}
           onClose={() => setTrenutniTermin(null)}
           onReserve={handleReserve}
           onCancel={handleCancel}
