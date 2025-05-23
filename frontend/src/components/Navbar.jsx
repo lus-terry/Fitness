@@ -21,23 +21,31 @@ const Navbar = () => {
 
       {user && (
         <div style={styles.links}>
-          <NavLink to="/dashboard" style={styles.link} activeStyle={styles.activeLink}>
-            Dashboard
+          <NavLink to="/schedule" style={styles.link} activeStyle={styles.activeLink}>
+            Raspored
           </NavLink>
+
+          {(user.role === 'client' ) && (
+          <NavLink to="/trainers" style={styles.link} activeStyle={styles.activeLink}>
+            Treneri
+          </NavLink>
+          )}
+          {(user.role === 'trainer' ) && (
           <NavLink to="/trainings" style={styles.link} activeStyle={styles.activeLink}>
             Treninzi
           </NavLink>
+          )}
 
-          {/* Rezervacije - dostupno samo klijentima i adminu */}
+          {/* Rezervacije - dostupno samo klijentima i adminu 
           {(user.role === 'client' || user.role === 'admin') && (
             <NavLink to="/reservation" style={styles.link} activeStyle={styles.activeLink}>
               Rezervacije
             </NavLink>
           )}
 
-          <NavLink to="/schedule" style={styles.link} activeStyle={styles.activeLink}>
-             Raspored
-          </NavLink>
+          */}
+
+
 
 
           {/* Prisustva - dostupno samo trenerima i adminu */}
@@ -64,7 +72,7 @@ const Navbar = () => {
       <div style={styles.auth}>
         {user ? (
           <>
-            <span style={styles.user}>Pozdrav, {user.name}</span>
+
             <button onClick={handleLogout} style={styles.logoutBtn}>
               Odjava
             </button>
