@@ -1,24 +1,21 @@
-// src/api/reservations.js
-import axios from './axios'; // ✅ KORISTI prilagođeni axios s interceptorom
+import axios from './axios';
 
-const API_URL = '/api/reservations'; // koristi proxy (nema localhost)
-
-export const createReservation = async (data) => {
-  console.log('[createReservation] Šaljem podatke:', data); // ✅ provjera
-  const res = await axios.post(API_URL, data);
+export const createReservation = async (id_termina) => {
+  const res = await axios.post('/api/reservations', { id_termina });
   return res.data;
 };
 
-export const getReservationsByUser = async () => {
-  const res = await axios.get(`${API_URL}/my-reservations`);
+export const cancelReservation = async (id_termina) => {
+  const res = await axios.delete(`/api/reservations/${id_termina}`);
   return res.data;
 };
 
-export const cancelReservation = async (reservationId) => {
-  const res = await axios.delete(`${API_URL}/${reservationId}`);
+export const getUserReservations = async () => {
+  const res = await axios.get('/api/reservations/my-reservations');
   return res.data;
 };
 
-export const getUserReservations = async (userId) => {
-  return getReservationsByUser(userId); // funkcionalno isto
+export const getTrainerReservations = async () => {
+  const res = await axios.get('/api/reservations/trainer-reservations');
+  return res.data;
 };

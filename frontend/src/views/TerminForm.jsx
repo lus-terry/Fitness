@@ -5,14 +5,14 @@ import { useAuth } from '../contexts/AuthContext';
 export default function TerminForm() {
   const { user } = useAuth(); // Trener mora biti ulogiran
 
-  const [form, setForm] = useState({
-    id_treninga: '',
-    datum: '',
-    vrijeme_termina: '',
-    trajanje: '',
-    mjesto: '',
-    dostupnost: '',
-  });
+const [form, setForm] = useState({
+  id_treninga: '',
+  datum: '',
+  vrijeme_termina: '',
+  trajanje: '',
+  mjesto: '',
+});
+
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -31,18 +31,17 @@ export default function TerminForm() {
         id_trenera: user.id_korisnika,
         id_treninga: parseInt(form.id_treninga),
         trajanje: parseInt(form.trajanje),
-        dostupnost: parseInt(form.dostupnost),
+        dostupnost: 'available',
       };
 
       await createTermin(terminZaSlanje);
       setStatus('✅ Termin uspješno dodan.');
       setForm({
-        id_treninga: '',
         datum: '',
         vrijeme_termina: '',
         trajanje: '',
         mjesto: '',
-        dostupnost: '',
+  
       });
     } catch (error) {
       console.error(error);
@@ -61,14 +60,7 @@ export default function TerminForm() {
     <div>
       <h2>Dodaj novi termin</h2>
       <form onSubmit={handleSubmit}>
-        <input
-          name="id_treninga"
-          placeholder="ID treninga"
-          type="number"
-          value={form.id_treninga}
-          onChange={handleChange}
-          required
-        />
+    
         <input
           name="datum"
           type="date"
@@ -98,14 +90,7 @@ export default function TerminForm() {
           onChange={handleChange}
           required
         />
-        <input
-          name="dostupnost"
-          type="number"
-          placeholder="Broj slobodnih mjesta"
-          value={form.dostupnost}
-          onChange={handleChange}
-          required
-        />
+
         <button type="submit" disabled={loading}>
           {loading ? 'Dodavanje...' : 'Dodaj termin'}
         </button>
