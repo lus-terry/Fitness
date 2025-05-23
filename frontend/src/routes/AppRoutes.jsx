@@ -5,7 +5,7 @@ import Home from '../views/Home';
 import Login from '../views/Login';
 import Register from '../views/Register';
 import Dashboard from '../views/Dashboard';
-import TrainingList from '../views/TrainingList';
+
 import TrainingDetail from '../views/TrainingDetail';
 import ReservationForm from '../views/ReservationForm';
 import Schedule from '../views/Schedule';
@@ -35,14 +35,7 @@ export default function AppRoutes() {
       />
 
       {/* Client-only */}
-      <Route
-        path="/trainings"
-        element={
-          <ProtectedRoute allowedRoles={['client']}>
-            <TrainingList />
-          </ProtectedRoute>
-        }
-      />
+     
       <Route
         path="/trainings/:id"
         element={
