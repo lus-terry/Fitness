@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function TerminModal({
   termin,
@@ -8,6 +9,8 @@ export default function TerminModal({
   onReserve = () => {},
   onCancel = () => {}
 }) {
+  const { user } = useAuth();
+
   if (!termin) return null;
 
   const handleReserve = () => {
@@ -31,22 +34,23 @@ export default function TerminModal({
         <p><strong>Trening:</strong> {termin.title.includes('ID null') ? 'Nije definirano' : termin.title}</p>
         <p><strong>Trener:</strong> {trener}</p>
 
-        <div style={{ marginTop: '1rem' }}>
-          {termin.rezerviran ? (
-            <button onClick={handleCancel} className="cancel-button">
-              Otkaži rezervaciju
-            </button>
-          ) : (
-            <button onClick={handleReserve} className="reserve-button">
-              Rezerviraj termin
-            </button>
-          )}
-        </div>
+        {user?.role === 'client' && (
+          <div style={{ marginTop: '1rem' }}>
+            {termin.rezerviran ? (
+              <button onClick={handleCancel} className="cancel-button">
+                Otkaži rezervaciju
+              </button>
+            ) : (
+              <button onClick={handleReserve} className="reserve-button">
+                Rezerviraj termin
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
 
 TerminModal.propTypes = {
   termin: PropTypes.object,
