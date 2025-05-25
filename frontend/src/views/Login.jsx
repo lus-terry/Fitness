@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
-  const { login } = useAuth(); // login dolazi iz AuthContexta
+  const { login } = useAuth(); 
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -11,10 +11,10 @@ export default function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setErrorMsg(null); // reset poruke
+    setErrorMsg(null); 
 
     try {
-      await login({ email, password }); // login iz konteksta obavlja sve
+      await login({ email, password }); 
       navigate('/');
     } catch (error) {
       console.error('Login failed:', error);

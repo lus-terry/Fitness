@@ -13,10 +13,10 @@ export default function ReservationForm() {
       console.log('[FORM] Token u localStorage:', localStorage.getItem('token'));
 
       await createReservation({ id_termina });
-      setStatus('✅ Zahtjev za rezervaciju poslan!');
+      setStatus('Zahtjev za rezervaciju poslan!');
     } catch (err) {
       console.error(err);
-      setStatus('❌ Greška pri slanju zahtjeva.');
+      setStatus('Greška pri slanju zahtjeva.');
     }
   };
 

@@ -73,7 +73,7 @@ const Schedule = () => {
 
         setEvents(formatted);
       } catch (err) {
-        console.error('❌ Greška prilikom dohvaćanja termina:', err);
+        console.error('Greška prilikom dohvaćanja termina:', err);
       }
     };
 
@@ -99,7 +99,7 @@ const Schedule = () => {
       setTrenutniTermin(null);
       window.location.reload();
     } catch (err) {
-      console.error('❌ Rezervacija nije uspjela:', err);
+      console.error('Rezervacija nije uspjela:', err);
       alert('Greška prilikom rezervacije.');
     }
   };
@@ -110,7 +110,7 @@ const Schedule = () => {
       setTrenutniTermin(null);
       window.location.reload();
     } catch (err) {
-      console.error('❌ Otkazivanje nije uspjelo:', err);
+      console.error('Otkazivanje nije uspjelo:', err);
       alert('Greška prilikom otkazivanja.');
     }
   };

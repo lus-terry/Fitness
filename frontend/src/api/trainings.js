@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = 'http://localhost:5000/api/trainings'; // prilagodi URL prema backendu
+const API_URL = "http://localhost:5000/api/trainings";
 
 export const getAllTrainings = async () => {
   const response = await axios.get(API_URL);
@@ -27,15 +27,15 @@ export const deleteTraining = async (id) => {
   return response.data;
 };
 
-// Dodajemo funkcije koje su koristile viewovi:
 export const getTrainerTrainings = async (trainerId) => {
-  // Pretpostavka: backend ima endpoint za dohvati treninge određenog trenera
   const response = await axios.get(`${API_URL}/trainer/${trainerId}`);
   return response.data;
 };
 
 export const markAttendance = async (trainingId, attendanceData) => {
-  // Pretpostavka: backend endpoint za označavanje prisutnosti na treningu
-  const response = await axios.post(`${API_URL}/${trainingId}/attendance`, attendanceData);
+  const response = await axios.post(
+    `${API_URL}/${trainingId}/attendance`,
+    attendanceData
+  );
   return response.data;
 };

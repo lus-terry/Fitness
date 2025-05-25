@@ -46,7 +46,7 @@ const TerminForm = () => {
       alert('Termin uspješno dodan!');
       navigate('/');
     } catch (err) {
-      console.error('❌ Greška prilikom dodavanja termina:', err);
+      console.error('Greška prilikom dodavanja termina:', err);
       alert('Greška prilikom dodavanja.');
     }
   };

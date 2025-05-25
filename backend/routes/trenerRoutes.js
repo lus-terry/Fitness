@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db'); // pretpostavljam da koristiš pg
+const db = require('../db'); 
 
-// Dohvati sve trenere s njihovim korisničkim podacima
 router.get('/', async (req, res) => {
   try {
     const result = await db.query(`

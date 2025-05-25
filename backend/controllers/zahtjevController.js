@@ -1,72 +1,71 @@
-const Zahtjev = require('../models/zahtjev');
-const db = require('../db');
-
+const Zahtjev = require("../models/zahtjev");
+const db = require("../db");
 
 exports.create = async (req, res) => {
-  try {
-    const zahtjev = await Zahtjev.create({
-      id_klijenta: req.user.id_korisnika,
-      id_termina: req.body.id_termina,
-      vrijeme_zahtjeva: new Date(),
-      status_rezervacije: 'reserved'
-    });
-    res.status(201).json(zahtjev);
-  } catch (err) {
-    console.error('❌ Greška prilikom rezervacije:', err);
-    res.status(500).json({ error: err.message });
-  }
-};
-
-exports.getMyReservations = async (req, res) => {
-  try {
-    const zahtjevi = await Zahtjev.getByUserId(req.user.id_korisnika);
-    res.json(zahtjevi);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-exports.cancel = async (req, res) => {
-  const { id } = req.params;
-  const userId = req.user.id_korisnika;
-
-  console.log('[cancelReservation] Termin ID:', id);
-  console.log('[cancelReservation] Korisnik ID:', userId);
+  const id_klijenta = req.user.id_korisnika;
+  const id_termina = req.body.id_termina;
 
   try {
-    const result = await db.query(
-      'DELETE FROM zahtjev_za_rezervaciju WHERE id_termina = $1 AND id_klijenta = $2 RETURNING *',
-      [id, userId]
+    // validacija
+    const terminRes = await db.query(
+      `SELECT datum, vrijeme_termina, trajanje, id_trenera 
+       FROM termin 
+       WHERE id_termina = $1`,
+      [id_termina]
     );
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ message: 'Rezervacija nije pronađena ili ne pripada korisniku.' });
+    if (terminRes.rows.length === 0) {
+      return res.status(404).json({ message: "Termin ne postoji." });
     }
 
-    res.json({ message: 'Rezervacija otkazana.' });
+    const { datum, vrijeme_termina, trajanje, id_trenera } = terminRes.rows[0];
+
+    // validacija
+    if (id_trenera === id_klijenta) {
+      return res.status(403).json({ message: "Trener ne može rezervirati vlastiti termin." });
+    }
+
+    const [h, m, s] = vrijeme_termina.split(":").map(Number);
+    const vrijemePocetka = new Date(datum);
+    vrijemePocetka.setHours(h, m, s || 0, 0);
+
+    const sada = new Date();
+    if (vrijemePocetka < sada) {
+      return res.status(400).json({ message: "Ne možeš rezervirati termin u prošlosti." });
+    }
+
+    // validacija
+    const vecPostoji = await db.query(
+      `SELECT * FROM zahtjev_za_rezervaciju 
+       WHERE id_klijenta = $1 AND id_termina = $2`,
+      [id_klijenta, id_termina]
+    );
+
+    if (vecPostoji.rows.length > 0) {
+      return res.status(409).json({ message: "Već si rezervirao ovaj termin." });
+    }
+
+    // validacija
+    const terminVecRezerviran = await db.query(
+      `SELECT * FROM zahtjev_za_rezervaciju 
+       WHERE id_termina = $1 AND status_rezervacije = 'reserved'`,
+      [id_termina]
+    );
+
+    if (terminVecRezerviran.rows.length > 0) {
+      return res.status(409).json({ message: "Ovaj termin je već rezerviran." });
+    }
+
+    const zahtjev = await Zahtjev.create({
+      id_klijenta,
+      id_termina,
+      vrijeme_zahtjeva: new Date(),
+      status_rezervacije: "reserved",
+    });
+
+    res.status(201).json(zahtjev);
   } catch (err) {
-    console.error('[cancelReservation] ❌ Greška:', err.message);
-    res.status(500).json({ error: 'Greška pri otkazivanju rezervacije.' });
-  }
-};
-
-// Dohvati sve zahtjeve za trenere – njihovi termini i klijenti
-exports.getReservationsForTrainer = async (req, res) => {
-  const trenerId = req.user.id_korisnika;
-
-  try {
-    const result = await db.query(`
-      SELECT z.id_termina, z.status_rezervacije, k.ime, k.prezime
-      FROM zahtjev_za_rezervaciju z
-      JOIN termin t ON z.id_termina = t.id_termina
-      JOIN klijent kl ON z.id_klijenta = kl.id_korisnika
-      JOIN korisnik k ON k.id_korisnika = kl.id_korisnika
-      WHERE t.id_trenera = $1 AND z.status_rezervacije = 'reserved'
-    `, [trenerId]);
-
-    res.json(result.rows);
-  } catch (err) {
-    console.error('[getReservationsForTrainer] Greška:', err.message);
-    res.status(500).json({ error: 'Greška pri dohvaćanju rezervacija.' });
+    console.error("Greška prilikom rezervacije:", err);
+    res.status(500).json({ error: err.message });
   }
 };
